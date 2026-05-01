@@ -38,5 +38,8 @@
         "mraid_support": false,
         "snapchat_cta": false,
         "compress_engine": false
+    },
+    "appbuilder": {
+        "audio_transform": false
     }
 }

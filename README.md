@@ -264,3 +264,38 @@ $ npm run cordova-publish
     ↪️ Base64 encode audio assets config.json
     ✔️ Zipping it all back again
 ```
+
+## AppBuilder Publish
+
+This uses the Download App REST API to download a build and prepare it for AppBuilder consumption.
+
+It follows an AppBuilder-specific output contract:
+
+* Script: `appbuilder-publish`
+* Required input: `--output <path>`
+* Output structure: `<output>/<project>_<version>`
+* Manifest: writes `publish-manifest.json` in the output root
+* Logging: line-delimited JSON on stdout
+* Zip output: not produced
+
+Default behavior:
+
+* Adds `cordova.js` to `index.html`
+* Audio base64 transform is disabled by default
+* Keeps partial output and writes a failed manifest on error
+* Does not prune old output folders
+
+Optional audio transform:
+
+Set `config.json` value `appbuilder.audio_transform` to `true` to enable the audio conversion pass.
+
+### Usage
+1. `npm run appbuilder-publish -- --output ./temp/out`
+
+### Example
+```
+$ npm run appbuilder-publish -- --output ./temp/out
+{"ts":"2026-05-01T00:00:00.000Z","level":"info","event":"preflight.ok","checked":4}
+{"ts":"2026-05-01T00:00:00.100Z","level":"info","event":"publish.start","script":"appbuilder-publish","outputRoot":"...","outputPath":"..."}
+{"ts":"2026-05-01T00:00:05.000Z","level":"info","event":"publish.success","manifestPath":"...","outputPath":"..."}
+```

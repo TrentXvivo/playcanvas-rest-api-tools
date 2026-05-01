@@ -9,7 +9,8 @@
     "archive-all": "node archive-project-all.js",
     "test-one-page": "node tests/test-one-page.js",
     "one-page": "node one-page.js",
-    "cordova-publish": "node cordova-publish.js"
+    "cordova-publish": "node cordova-publish.js",
+    "appbuilder-publish": "node appbuilder-publish.js"
   },
   "author": "support@playcanvas.com",
   "license": "MIT",
