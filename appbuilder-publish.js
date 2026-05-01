@@ -17,12 +17,22 @@ function logEvent(event, payload, level) {
 
 function parseArgs(argv) {
     let outputRoot = '';
+    const positional = [];
 
     for (let i = 0; i < argv.length; i += 1) {
         if (argv[i] === '--output') {
             outputRoot = argv[i + 1] || '';
             i += 1;
+            continue;
         }
+
+        if (!String(argv[i] || '').startsWith('--')) {
+            positional.push(argv[i]);
+        }
+    }
+
+    if (!outputRoot && positional.length > 0) {
+        outputRoot = positional[0];
     }
 
     if (!outputRoot || !outputRoot.trim()) {
@@ -44,11 +54,20 @@ function moduleExists(moduleName) {
 }
 
 function installModule(moduleName) {
-    const npmExec = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-    const result = spawnSync(npmExec, ['install', moduleName, '--no-save'], {
-        cwd: __dirname,
-        encoding: 'utf8'
-    });
+    const isWindows = process.platform === 'win32';
+    const result = isWindows
+        ? spawnSync('cmd.exe', ['/d', '/s', '/c', `npm install ${moduleName} --no-save`], {
+            cwd: __dirname,
+            encoding: 'utf8'
+        })
+        : spawnSync('npm', ['install', moduleName, '--no-save'], {
+            cwd: __dirname,
+            encoding: 'utf8'
+        });
+
+    if (result.error) {
+        throw new Error(result.error.message || `npm install failed for ${moduleName}`);
+    }
 
     if (result.status !== 0) {
         throw new Error(result.stderr || result.stdout || `npm install failed for ${moduleName}`);
