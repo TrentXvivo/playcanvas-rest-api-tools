@@ -13,6 +13,11 @@ const config = shared.readConfig();
 var externFiles = [
 ];
 
+
+// these extensions will not be converted to base64
+const excludeFileExtensionsFromBase64 = [".mp4"];  /////////                                                    Trent added
+
+
 function patch(projectPath) {
     return new Promise((resolve, reject) => {
         (async function() {
@@ -41,13 +46,20 @@ function patch(projectPath) {
                     }
 
                     // If it's not a file or an audio asset, we can ignore
-                    if (!asset.file || asset.type !== 'audio') {
+                    if (!asset.file || asset.type !== 'audio' ) {
                         continue;
                     }
 
                     let url = unescape(asset.file.url);
                     let urlSplit = url.split('.');
                     let extension = urlSplit[urlSplit.length - 1];
+
+                    // If the file is in the exclude list, we can ignore                                           Trent added
+                    if (excludeFileExtensionsFromBase64.includes('.' + extension)) {
+                        console.log("   Skipping " + url + " as it is in the exclude list");
+                        continue;
+                    }
+
 
                     let filepath = path.resolve(projectPath, url);
                     if (!fs.existsSync(filepath)) {
